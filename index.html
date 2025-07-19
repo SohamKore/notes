@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notes Index</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #ffe4e1; /* Light pink background */
+      background:linear-gradient(145deg,#ff9b90,#ffe4e1);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    h1 {
+      color: #ff69b4; /* Hot pink for headings */
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin: 10px 0;
+    }
+    a {
+      text-decoration: none;
+      color: #ff1493; /* Deep pink for links */
+      font-size: 1.2em;
+      transition: color 0.3s ease;
+    }
+    a:hover {
+      color: #d02020; /* Violet red for hover effect */
+    }
+    .custom-cursor {
+      position: fixed !important;
+      pointer-events: none !important;
+      z-index: 9999 !important;
+      height: 70px !important; /* Adjust the height as needed */
+    }
+    .neon-text {
+            /* font-size: 4rem; */
+            font-family: 'Arial', sans-serif;
+            color: #ff1495;
+            text-shadow: 0 0 5px #ff1495, 0 0 10px #ff1495, 0 0 20px #ff1495, 0 0 40px #ff1495, 0 0 80px #ff1495;
+            position: relative;
+            animation: glow 1.5s infinite;
+        }
+
+        .neon-text::before,
+        .neon-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            color: #0ff;
+            background: black;
+            overflow: hidden;
+            clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+            animation: glitch 2s infinite;
+        }
+
+        .neon-text::after {
+            color: rgb(0, 255, 255);
+            animation: glitch 2s infinite 0.5s;
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                text-shadow: 0 0 5px #f0f, 0 0 10px #f0f, 0 0 20px #f0f, 0 0 40px #f0f, 0 0 80px #f0f;
+            }
+            50% {
+                text-shadow: 0 0 10px #0ff, 0 0 20px #f0f, 0 0 40px #f0f, 0 0 80px #f0f, 0 0 100px #f0f;
+            }
+        }
+
+        @keyframes glitch {
+            0% {
+                clip-path: polygon(0 0, 100% 0, 100% 10%, 0 10%);
+                transform: translate(5px, -5px);
+            }
+            25% {
+                clip-path: polygon(0 20%, 100% 20%, 100% 30%, 0 30%);
+                transform: translate(-5px, 5px);
+            }
+            50% {
+                clip-path: polygon(0 40%, 100% 40%, 100% 50%, 0 50%);
+                transform: translate(5px, 0);
+            }
+            75% {
+                clip-path: polygon(0 70%, 100% 70%, 100% 80%, 0 80%);
+                transform: translate(-5px, -5px);
+            }
+            100% {
+                clip-path: polygon(0 90%, 100% 90%, 100% 100%, 0 100%);
+                transform: translate(0, 5px);
+            }
+        }
+  </style>
+</head>
+<body>
+  <h1>Excel Notes:</h1>
+  <ul id="pdf-list">
+    <!-- Dynamic PDF links will be added here -->
+  </ul>
+  <div class="neon-text" data-text="By: Soham Kore">By: Soham Kore</div>
+
+
+  <script>
+    window.onload = function () {
+      // Custom Cursor Implementation
+      var cursor = document.createElement('img');
+      cursor.src = 'https://i.gifer.com/1V94.gif';
+      cursor.classList.add('custom-cursor');
+
+      // Add cursor to the document
+      document.body.appendChild(cursor);
+
+      // Adjust cursor position based on mouse movement
+      document.addEventListener('mousemove', function (e) {
+        var cursorOffsetX = cursor.width / 2;
+        var cursorOffsetY = cursor.height / 2;
+        cursor.style.left = (e.clientX - cursorOffsetX) + 'px';
+        cursor.style.top = (e.clientY - cursorOffsetY) + 'px';
+      });
+
+      // Fetch PDF files from GitHub repo
+      const repoOwner = 'SohamKore';
+      const repoName = 'notes';
+      const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/`;
+
+      fetch(apiUrl)
+        .then((response) => response.json())
+        .then((data) => {
+          const pdfList = document.getElementById('pdf-list');
+
+          data.forEach((item) => {
+            if (item.name.endsWith('.pdf')) {
+              const listItem = document.createElement('li');
+              const link = document.createElement('a');
+              link.href = `https://github.com/${repoOwner}/${repoName}/blob/main/${encodeURIComponent(item.name)}?raw=true`;
+              link.textContent = item.name;
+              link.target = '_blank'; // Open in a new tab
+              listItem.appendChild(link);
+              pdfList.appendChild(listItem);
+            }
+          });
+        })
+        .catch((error) => {
+          console.error('Error fetching PDF files:', error);
+        });
+    };
+  </script>
+</body>
+</html>
